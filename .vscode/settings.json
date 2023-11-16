@@ -1,0 +1,7 @@
+{
+    "C_Cpp.default.compilerPath": "c:\\documents\\RHUNNAN's\\networking_socket_programming\\.vscode\\c_cpp_properties.json",
+    "files.associations": {
+        "unistd.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "enabled"
+}
