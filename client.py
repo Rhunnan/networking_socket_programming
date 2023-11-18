@@ -5,7 +5,7 @@ def betting(Money, betMoney):
     return Money - betMoney
 
 
-def receive_messages(client_socket, bet):
+def receiveMessagesAndHandleClientGame(client_socket, bet):
     #variables for betting and money of the player
     initialMoney = 500
     int(initialMoney)
@@ -22,9 +22,11 @@ def receive_messages(client_socket, bet):
     earned = 0
     try:
         while True:
+            #if naay bomb dli mo print ani
+            if bombCounter < 1 or counter >1:
+                print("Money: " + str(initialMoney))
+                print("Bet: " + str(bet) )
             # Receive and print messages from the server
-            print("Money: " + str(initialMoney))
-            print("Bet: " + str(bet) )
             message = client_socket.recv(1024)
             message = message.decode('utf-8')
 
@@ -40,6 +42,22 @@ def receive_messages(client_socket, bet):
                     earned = bet*counter
                     initialMoney +=earned
                     print("You Won: " + str(earned) )
+                    print("Money: " + str(initialMoney))
+                    #ask user if he/she still want's to play then restart the check counter and the matrix value in the server
+                    #then let the user input a new bet
+                    redo = input("Enter (R) to Play again. Input (Q) to exit").lower
+                    if redo == 'R':
+                        counter = 0
+                        bet = input("Input Bet: ")
+                        client_socket.send(redo.encode('utf-8'))
+
+                        #no need to undo the matrix Score and initial Matrix score since they are dependent 
+                        # on the original matrix in the server so by making the server send an unscatched matrix then
+                        # the matrixScore and initialMatrix score will also be updated
+                        #the money remains the same except for bet 
+                    else:#if redp == "q"
+                        client_socket.send(redo.encode('utf-8'))
+
 
                 
                 print("User: " + message)
@@ -61,8 +79,24 @@ def receive_messages(client_socket, bet):
 
                 #if there is bomb then tell the or the user click a bomb then tell the user he/she lose
                 if bombCounter > 0:
-                    print("Alert: You Tap a Bomb!!!\nYou Lose!!!\nBetter Luck Next Time :) :) :)")
                     initialMoney -= bet
+                    print("Money: " + str(initialMoney))
+                    print("Alert: You Tap a Bomb!!!\nYou Lose!!!\nBetter Luck Next Time :) :) :)")
+                    #asking if the player wants to play again
+                    redo = input("Enter (R) to Play again. Input (Q) to exit").lower
+                    if redo == 'R':
+                        bombCounter = 0
+                        bet = input("Input Bet: ")
+                        client_socket.send(redo.encode('utf-8'))
+
+                        #no need to undo the matrix Score and initial Matrix score since they are dependent 
+                        # on the original matrix in the server so by making the server send an unscatched matrix then
+                        # the matrixScore and initialMatrix score will also be updated
+                        #the money remains the same except for bet 
+                    else:#if redp == "q"
+                        client_socket.send(redo.encode('utf-8'))
+
+
 
     except Exception as e:
         print(f"Error receiving messages: {e}")
@@ -77,7 +111,7 @@ def main():
     bet = int(input("Enter your Bet: "))
     # money reamaining after betting
     # Start a thread to receive messages from the server
-    receive_thread = threading.Thread(target=receive_messages, args=(client_socket, bet))
+    receive_thread = threading.Thread(target=receiveMessagesAndHandleClientGame, args=(client_socket, bet))
     receive_thread.start()
 
     try:

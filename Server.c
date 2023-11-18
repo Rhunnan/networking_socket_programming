@@ -20,7 +20,7 @@ int num_clients = 0;
 CRITICAL_SECTION client_lock;
 //diri ako ge declare ang mga functions 
 //kaning handle client kani na function mao ni gamiton para paghandle sa each client sa thread
-svoid handle_client(void* param);
+void handle_client(void* param);
 
 int main() {
     //kani ga create kos winsock
@@ -151,7 +151,32 @@ void handle_client(void* param) {
         data[bytes_received] = '\0';
         //nadawat sa client
         printf("nadawat sa from client: %s\n", data);
-       
+            //if data is equals to ""R" restart the game by sending the original matrix
+            if(data[0] == "r"){
+                send(client_socket, matrix, strlen(matrix), 0);
+            }else if(data[0]== "q"){//if data is equals to q kick out the client from the server to end the game
+                // enter critical section to update the list of connected clients after removing a clinet
+                EnterCriticalSection(&client_lock);
+                // Close the client socket if not receiving any message anymore
+                closesocket(client_socket);
+
+                // Remove the client from the connected client list
+                for (int i = 0; i < num_clients; ++i) {
+                    if (connected_clients[i] == client_socket) {
+                        for (int j = i; j < num_clients - 1; ++j) {
+                            connected_clients[j] = connected_clients[j + 1];
+                        }
+                        --num_clients;
+                        break;
+                    }
+                }
+                LeaveCriticalSection(&client_lock);                
+
+            }
+
+       //gehimog interger ang data nadawat gekan sa user para i check sa mga index and if 26 ang value ani pasabot mo send og 26 digto
+       //naay function digto sa client na maka stop and mo calculate pasabot iya na ge submit iya socre sa game while wala pa
+       // ka click bumba
             int indexCheck = atoi(data)-1; 
             if(indexCheck == 25){
                 char endingArray[2];
@@ -176,12 +201,12 @@ void handle_client(void* param) {
         
        
     }
-
+// enter critical section to update the list of connected clients after removing a clinet
     EnterCriticalSection(&client_lock);
-    // Close the client socket
+    // Close the client socket if not receiving any message anymore
     closesocket(client_socket);
 
-    // Remove the clients from the connected client list
+    // Remove the client from the connected client list
     for (int i = 0; i < num_clients; ++i) {
         if (connected_clients[i] == client_socket) {
             for (int j = i; j < num_clients - 1; ++j) {
