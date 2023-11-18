@@ -20,9 +20,7 @@ int num_clients = 0;
 CRITICAL_SECTION client_lock;
 //diri ako ge declare ang mga functions 
 //kaning handle client kani na function mao ni gamiton para paghandle sa each client sa thread
-//kaning broacast is to send messages to each client nga and ilang client_sockets naa sulod sa connected clients array
-void handle_client(void* param);
-void broadcast(const char* message, SOCKET sender);
+svoid handle_client(void* param);
 
 int main() {
     //kani ga create kos winsock
