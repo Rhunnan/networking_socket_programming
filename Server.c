@@ -129,7 +129,7 @@ void handle_client(void* param) {
         for (int i = 0; i < 25; i++) {
             int randomNumber = rand() % 5 + 1;
             if(randomNumber == 1){
-                printf("bomb number index: %d", i+1);
+                printf("bomb number index: %d\n", i+1);
             }
             arrayBomb[i] = randomNumber;
     }
@@ -157,16 +157,14 @@ void handle_client(void* param) {
     while ((bytes_received = recv(client_socket, data, sizeof(data), 0)) > 0) {
         data[bytes_received] = '\0';
         //nadawat sa client
-        printf("nadawat sa from client: %sn", data);
+        printf("nadawat sa client: %sn", data);
             //if data is equals to ""R" restart the game by sending the original matrix
             if(data[0] == 'r'){
-                printf("nisulod sa r");
-                //make the matrix array back to original form
+                //make the matrix array back to original form for players who wants to play again after clicking a bomb
                 for(int r=0; r<strlen(matrix); r++){
                         matrix[r] = matrixOriginalForm[r];
                 }
                 send(client_socket, matrix, strlen(matrix), 0);
-                printf("\n\nhuman sa q");
            
             }else{
 
