@@ -131,7 +131,7 @@ void handle_client(void* param) {
         for (int i = 0; i < 25; i++) {
             int randomNumber = rand() % 5 + 1;
             if(randomNumber == 1){
-                printf("bomb number index: %d", i);
+                printf("bomb number index: %d", i+1);
             }
             arrayBomb[i] = randomNumber;
     }
@@ -176,20 +176,14 @@ void handle_client(void* param) {
             }
     
         
-        
-       // +1 for the null terminator
-
-        // Broadcast a message to all connected clients
-        char broadcast_msg[1024];
-        sprintf(broadcast_msg, "New client joined: %s", data);
-        broadcast(broadcast_msg, client_socket);
+       
     }
 
     EnterCriticalSection(&client_lock);
     // Close the client socket
     closesocket(client_socket);
 
-    // Remove the client from the list
+    // Remove the clients from the connected client list
     for (int i = 0; i < num_clients; ++i) {
         if (connected_clients[i] == client_socket) {
             for (int j = i; j < num_clients - 1; ++j) {
@@ -202,12 +196,4 @@ void handle_client(void* param) {
     LeaveCriticalSection(&client_lock);
 }
 
-void broadcast(const char* message, SOCKET sender) {
-    EnterCriticalSection(&client_lock);
-    for (int i = 0; i < num_clients; ++i) {
-        if (connected_clients[i] != sender) {
-            send(connected_clients[i], message, strlen(message) + 1, 0);  // +1 for the null terminator
-        }
-    }
-    LeaveCriticalSection(&client_lock);
-}
+
