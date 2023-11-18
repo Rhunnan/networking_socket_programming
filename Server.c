@@ -152,9 +152,9 @@ void handle_client(void* param) {
         //nadawat sa client
         printf("nadawat sa from client: %s\n", data);
             //if data is equals to ""R" restart the game by sending the original matrix
-            if(data[0] == "r"){
+            if(data[0] == 'r'){
                 send(client_socket, matrix, strlen(matrix), 0);
-            }else if(data[0]== "q"){//if data is equals to q kick out the client from the server to end the game
+            }else if(data[0] == 'q'){//if data is equals to q kick out the client from the server to end the game
                 // enter critical section to update the list of connected clients after removing a clinet
                 EnterCriticalSection(&client_lock);
                 // Close the client socket if not receiving any message anymore
@@ -172,32 +172,32 @@ void handle_client(void* param) {
                 }
                 LeaveCriticalSection(&client_lock);                
 
-            }
-
-       //gehimog interger ang data nadawat gekan sa user para i check sa mga index and if 26 ang value ani pasabot mo send og 26 digto
-       //naay function digto sa client na maka stop and mo calculate pasabot iya na ge submit iya socre sa game while wala pa
-       // ka click bumba
-            int indexCheck = atoi(data)-1; 
-            if(indexCheck == 25){
-                char endingArray[2];
-                sprintf(endingArray, "%d", indexCheck);
-                send(client_socket, endingArray, strlen(endingArray), 0);
-            }else{// casttype and value sa data para gamiton index checking sa bomb, minus 1 kay ang index sugod man 0
-            //check if ang hatag sa client na value is naa bay bomba if naa minus iya kwarta
-        //if wala butang counter ron ma add pila na kabuok iya ge click before siya mo submit ron ma double iya kwarta
-        //nya sa UI if wala bomba ang na click kay ilisi og slash na symbol "-" if bomba ilisi asterisk nya minus iya kwarata "*"
-            if(arrayBomb[indexCheck] == 1){
-            matrix[indexCheck] = '*';
-            send(client_socket, matrix, strlen(matrix), 0);
-            send(client_socket, data, strlen(data) + 1, 0);  
-
             }else{
-            matrix[indexCheck] = '/';
-            send(client_socket, matrix, strlen(matrix), 0);
-            send(client_socket, data, strlen(data) + 1, 0);  
-            }
-            }
-    
+
+        //gehimog interger ang data nadawat gekan sa user para i check sa mga index and if 26 ang value ani pasabot mo send og 26 digto
+        //naay function digto sa client na maka stop and mo calculate pasabot iya na ge submit iya socre sa game while wala pa
+        // ka click bumba
+                int indexCheck = atoi(data)-1; 
+                if(indexCheck == 25){
+                    char endingArray[2];
+                    sprintf(endingArray, "%d", indexCheck);
+                    send(client_socket, endingArray, strlen(endingArray), 0);
+                }else{// casttype and value sa data para gamiton index checking sa bomb, minus 1 kay ang index sugod man 0
+                //check if ang hatag sa client na value is naa bay bomba if naa minus iya kwarta
+            //if wala butang counter ron ma add pila na kabuok iya ge click before siya mo submit ron ma double iya kwarta
+            //nya sa UI if wala bomba ang na click kay ilisi og slash na symbol "-" if bomba ilisi asterisk nya minus iya kwarata "*"
+                if(arrayBomb[indexCheck] == 1){
+                matrix[indexCheck] = '*';
+                send(client_socket, matrix, strlen(matrix), 0);
+                send(client_socket, data, strlen(data) + 1, 0);  
+
+                }else{
+                matrix[indexCheck] = '/';
+                send(client_socket, matrix, strlen(matrix), 0);
+                send(client_socket, data, strlen(data) + 1, 0);  
+                }
+                }
+         }
         
        
     }
