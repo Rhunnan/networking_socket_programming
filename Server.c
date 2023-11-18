@@ -143,6 +143,13 @@ void handle_client(void* param) {
         'G', 'H', 'I','J', 'K',
         'L', 'M', 'N','O', 'P'
     };
+    char matrixOriginalForm[26] = {
+        '1', '2', '3','4', '5',
+        '6', '7', '8','9', 'A',
+        'B', 'C', 'D','E', 'F',
+        'G', 'H', 'I','J', 'K',
+        'L', 'M', 'N','O', 'P'
+    };
 
     //send nako ang matrix sa client ron ma print digtos server side paras UI
     send(client_socket, matrix, strlen(matrix), 0);
@@ -150,28 +157,17 @@ void handle_client(void* param) {
     while ((bytes_received = recv(client_socket, data, sizeof(data), 0)) > 0) {
         data[bytes_received] = '\0';
         //nadawat sa client
-        printf("nadawat sa from client: %s\n", data);
+        printf("nadawat sa from client: %sn", data);
             //if data is equals to ""R" restart the game by sending the original matrix
             if(data[0] == 'r'){
-                send(client_socket, matrix, strlen(matrix), 0);
-            }else if(data[0] == 'q'){//if data is equals to q kick out the client from the server to end the game
-                // enter critical section to update the list of connected clients after removing a clinet
-                EnterCriticalSection(&client_lock);
-                // Close the client socket if not receiving any message anymore
-                closesocket(client_socket);
-
-                // Remove the client from the connected client list
-                for (int i = 0; i < num_clients; ++i) {
-                    if (connected_clients[i] == client_socket) {
-                        for (int j = i; j < num_clients - 1; ++j) {
-                            connected_clients[j] = connected_clients[j + 1];
-                        }
-                        --num_clients;
-                        break;
-                    }
+                printf("nisulod sa r");
+                //make the matrix array back to original form
+                for(int r=0; r<strlen(matrix); r++){
+                        matrix[r] = matrixOriginalForm[r];
                 }
-                LeaveCriticalSection(&client_lock);                
-
+                send(client_socket, matrix, strlen(matrix), 0);
+                printf("\n\nhuman sa q");
+           
             }else{
 
         //gehimog interger ang data nadawat gekan sa user para i check sa mga index and if 26 ang value ani pasabot mo send og 26 digto
